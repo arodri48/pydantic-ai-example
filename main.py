@@ -1,5 +1,7 @@
 import asyncio
 from dataclasses import dataclass
+from typing import Literal
+
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent, RunContext
@@ -24,7 +26,7 @@ class BillerDependencies:
     db: DatabaseConn
 
 class BillingOutput(BaseModel):
-    level_of_service: str = Field(description="The level of service provided by EMS crew")
+    level_of_service: Literal['BLS', 'ALS', 'ALS-2', 'Transport Not Taken'] = Field(description="The level of service provided by EMS crew")
     rationale: str = Field(description="The rationale for the chosen level of service")
 
 
@@ -33,8 +35,7 @@ medical_biller = Agent(
     deps_type=BillerDependencies,
     output_type=BillingOutput,
     system_prompt=(
-        "You are a certified medical biller specializing in EMS billing. Valid levels of service: 'BLS', 'ALS',"
-        " 'ALS-2', or 'TNT' (transport not taken). If giving rationale, be brief and to the point."
+        "You are a certified medical biller specializing in EMS billing. If giving rationale, be brief and to the point."
         " Rationale should start with 'Pt was ...'"
     )
 )
